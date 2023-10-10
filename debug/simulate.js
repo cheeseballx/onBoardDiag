@@ -2,8 +2,7 @@
 const {Point, InfluxDB} = require('@influxdata/influxdb-client');
 const influx = new InfluxDB({
     url: "http://localhost:8086" , 
-    token: "owuMyOG1KnR1SKggbmsWjhuDuWOW-G_ZyfWYHJuojZdgCfyNqclAiTPR6-ggVHZS6VrAbhKSEjho2VMC3psQTw==" 
-});
+    token: process.env.influxToken });
 
 
 //function to write a random value to the 'oil_temp'

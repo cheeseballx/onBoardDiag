@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.2",
+    "concurrently": "^8.2.1",
     "socket.io": "^4.7.2"
   },
   "name": "debug_package",
@@ -8,10 +9,16 @@
   "version": "1.0.0",
   "main": "simulate.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "npm --prefix ../client/ run start",
+    "server": "sudo systemctl start influxdb && npm --prefix ../server/ run start",
+    "simulator": "sudo systemctl start influxdb && . ../.config && export influxToken && node simulate.js",
+    "productive": "concurrently --prefixColors=\"blue,green\" --names=\"client,server\" \"npm run client\" \"npm run server\"",
+    "simulation": "concurrently --prefixColors=\"blue,green,yellow\" --names=\"client,server,simulator\" \"npm run client\" \"npm run server\" \"npm run simulator\""
   },
   "keywords": [
-    "debug", "simulate"
+    "debug",
+    "simulate"
   ],
   "author": "andreas",
   "license": "ISC"
