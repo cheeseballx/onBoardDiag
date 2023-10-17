@@ -24,7 +24,7 @@ function writeRandomPoint(){
 
 //variables
 const org = "odb";
-const bucket = "sensor";
+const bucket = "test1h";
 
 //build the api, query is not used for now but the write will be used
 const queryClient = influx.getQueryApi(org);

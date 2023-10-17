@@ -1,13 +1,16 @@
 import { socket } from './socket';
 import { useState, useEffect } from 'react'
 import { ConnectionManager } from './ConnectionManager';
+import { LiveData } from './LiveData';
 
-
+const time = Date.now();
 
 function App() {
 
-  const [x,setX] = useState(-1);
+  const [dat,setDat] = useState({val: -1, time: -1, fps: -1});
+  const [dt, set_dt] = useState(0);
 
+  //use effect without param means we just start it once
   useEffect(() => {
     const onConnect = () => {
       console.log("connected");
@@ -22,9 +25,14 @@ function App() {
     };
 
     const onData = (dat) => {
-      setX(dat._value);
+      setDat({val:dat._value, time:dat._time, fps:dat.fps});
     };
-    
+
+    //Interval of arount and refresh this around all ten seconds
+    setInterval(() => {
+      set_dt((Date.now() - time)/1000.0);
+    },10000);
+
     //rgister the listeners
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -42,11 +50,11 @@ function App() {
 
   return (
     <div>
-      Hello World
+      Hello World {dt}
       <ConnectionManager />
-      <br/>
-      <br/>
-      {x}
+      <div style={{display:"flex", flexWrap: "wrap"}}>
+        <LiveData dat={dat} head={"Oil Temp"} dt={dt}/>
+      </div>
     </div>
     
   );

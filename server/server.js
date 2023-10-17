@@ -1,3 +1,4 @@
+const {DB_Reader} = require('./worker');
 
 //some important variables, that needs to be defined even before importing 
 const port = 3000;
@@ -16,10 +17,7 @@ io.on("connection", socket => {
     console.log(socket.id);
 });
 
-//running some reading and emit (send) it at given interval, half a second for now 
-setInterval(() => {
-    //last insert needs to have a function what to do with the result
-    funs.lastInsert((res) => {
-        io.emit("data",res);
-    })
-},1000);
+
+//create the runners
+const mediumWorker = new DB_Reader("mediumSpeedRunner","test1h",["oil_temp"],100, 10, (x) => {console.log(x)});
+mediumWorker.start();
