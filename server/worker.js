@@ -36,7 +36,7 @@ class DB_Reader {
             
             //and if not it runs the task and restarts l
             else {
-                this.queryAndEmit(processResultsFun);
+                this.doQuery(processResultsFun);
                 setTimeout(this.runner, this.updateIntervalMs);
             }
         }
@@ -50,20 +50,15 @@ class DB_Reader {
         this.break = why;
     };
 
-    async queryAndEmit(processResultsFun){
+    async doQuery(processResultsFun){
         const first = "-" + (this.updateIntervalMs * 2) + "ms";
-        
-        //collect results
-        let results = {};
     
         //for every Query
-        Object.keys(this.mQueries).forEach(async q => {
+        const results = Object.keys(this.mQueries).reduce(async (a,q) => {
     
             //if there is a last reasult from query before, use this as starttime if not use the first time
             const start = this.mQueries[q].lastRes ? this.mQueries[q].lastRes._time : first;
             
-            console.log(start);
-
             //build the query
             const query = `
                 from(bucket: "${this.bucket}")
@@ -75,15 +70,19 @@ class DB_Reader {
     
             //can be a huge ram overflow, not if aggregateWindow is choosen wisely in combination with updateInterval
             const result = await queryClient.collectRows(query);
-            results[q] = result;
-            console.log(result.length);
+            a[q] = result;
+
         
             //save the last row here
             this.mQueries[q].lastRes = result[result.length-1];
-        });
+            
+            return a;
+        },{});
+
+        const res = await results;
     
         //process the result
-        processResultsFun(results);
+        processResultsFun(res);
     }
 }
 

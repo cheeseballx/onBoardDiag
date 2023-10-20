@@ -19,5 +19,5 @@ io.on("connection", socket => {
 
 
 //create the runners
-const mediumWorker = new DB_Reader("mediumSpeedRunner","test1h",["oil_temp"],100, 10, (x) => {console.log(x)});
+const mediumWorker = new DB_Reader("mediumSpeedRunner","test1h",["oil_temp"],500, 50, (x) => io.emit("data",x));
 mediumWorker.start();

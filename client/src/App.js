@@ -7,8 +7,7 @@ const time = Date.now();
 
 function App() {
 
-  const [dat,setDat] = useState({val: -1, time: -1, fps: -1});
-  const [dt, set_dt] = useState(0);
+  const [dat,setDat] = useState({});
 
   //use effect without param means we just start it once
   useEffect(() => {
@@ -25,13 +24,8 @@ function App() {
     };
 
     const onData = (dat) => {
-      setDat({val:dat._value, time:dat._time, fps:dat.fps});
+      setDat(dat);
     };
-
-    //Interval of arount and refresh this around all ten seconds
-    setInterval(() => {
-      set_dt((Date.now() - time)/1000.0);
-    },10000);
 
     //rgister the listeners
     socket.on('connect', onConnect);
@@ -50,10 +44,10 @@ function App() {
 
   return (
     <div>
-      Hello World {dt}
+      Hello World 
       <ConnectionManager />
       <div style={{display:"flex", flexWrap: "wrap"}}>
-        <LiveData dat={dat} head={"Oil Temp"} dt={dt}/>
+        <LiveData dat={dat.oil_temp} head={"Oil Temp"}/>
       </div>
     </div>
     

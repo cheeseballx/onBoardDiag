@@ -1,11 +1,21 @@
-import { useRef, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+import ApexChart from "apexcharts";
+import Chart from "react-apexcharts";
 
 
 export function LiveData({dat,head}) {
 
-    const renderCounter  = useRef(0);
-    renderCounter.current = renderCounter.current + 1;
+    const renderCounter = useRef(0);
+    const fullDat = useRef([]);
+    
+    
+    useEffect(() =>{
+        const arr = dat && dat.length>0 ? dat.map(x=> {return {x:x._time, y:x._value}}) : [];
+        fullDat.current = fullDat.current.concat(arr);
+        
+        ApexChart.exec('line', 'updateSeries', [{data: fullDat.current}]);
+        renderCounter.current = renderCounter.current + 1;
+    },[dat])
 
     const st_border = {
         border: "1px solid black",
@@ -18,7 +28,7 @@ export function LiveData({dat,head}) {
     }
     
     const st_val = {
-         fontSize:"3em"
+         fontSize:"2.2em"
     }
 
     const st_head = {
@@ -28,15 +38,52 @@ export function LiveData({dat,head}) {
         fontSize:"1em"
     }
 
+    const y = (dat && dat.length>0) ? dat[dat.length-1]._value : -1; 
+
+   
+
     //put at least 5 numbers in the beginning 
-    const paddedNr = "0".repeat(5) + dat.val.toFixed(2);
+    const paddedNr = " ".repeat(5) + y.toFixed(2);
     const output = paddedNr.substring(paddedNr.length - 6);
 
+    const series = [ //data on the y-axis
+    {
+      name: "Temperature in Celsius",
+      data: []
+    }
+  ];
+  const options = {
+    chart: { 
+        id: 'line',
+        animations: {
+            enabled: true,
+            easing: 'linear',
+            dynamicAnimation: {
+                speed: 400000
+            }
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        xaxis: {
+            type: 'datetime'
+        }
+        }
+  };
+
     return (
+        <>
         <div style={st_border}>
             <span style={st_head}>{head}</span>
             <span style={st_val}>{output}</span>
             {renderCounter.current}
         </div>
+        <Chart
+        options={options}
+        series={series}
+        type="line"
+        width="450"
+      />
+        </>
     )
 }
